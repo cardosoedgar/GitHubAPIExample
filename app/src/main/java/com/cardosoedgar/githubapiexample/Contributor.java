@@ -1,12 +1,17 @@
 package com.cardosoedgar.githubapiexample;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import auto.parcel.AutoParcel;
 
 /**
  * Created by edgarcardoso on 2/24/16.
  */
-public class Contributor {
+public class Contributor implements Parcelable {
     @SerializedName("login")
     @Expose
     public String login;
@@ -61,4 +66,79 @@ public class Contributor {
     @SerializedName("contributions")
     @Expose
     public Integer contributtions;
+
+    protected Contributor(Parcel in) {
+        login = in.readString();
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        avatarUrl = in.readString();
+        gravatarId = in.readString();
+        url = in.readString();
+        htmlUrl = in.readString();
+        followersUrl = in.readString();
+        followingUrl = in.readString();
+        gistsUrl = in.readString();
+        starredUrl = in.readString();
+        subscriptionsUrl = in.readString();
+        organizationsUrl = in.readString();
+        reposUrl = in.readString();
+        eventsUrl = in.readString();
+        receivedEventsUrl = in.readString();
+        type = in.readString();
+        byte siteAdminVal = in.readByte();
+        siteAdmin = siteAdminVal == 0x02 ? null : siteAdminVal != 0x00;
+        contributtions = in.readByte() == 0x00 ? null : in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(login);
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        dest.writeString(avatarUrl);
+        dest.writeString(gravatarId);
+        dest.writeString(url);
+        dest.writeString(htmlUrl);
+        dest.writeString(followersUrl);
+        dest.writeString(followingUrl);
+        dest.writeString(gistsUrl);
+        dest.writeString(starredUrl);
+        dest.writeString(subscriptionsUrl);
+        dest.writeString(organizationsUrl);
+        dest.writeString(reposUrl);
+        dest.writeString(eventsUrl);
+        dest.writeString(receivedEventsUrl);
+        dest.writeString(type);
+        if (siteAdmin == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (siteAdmin ? 0x01 : 0x00));
+        }
+        if (contributtions == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(contributtions);
+        }
+    }
+
+    public static final Parcelable.Creator<Contributor> CREATOR = new Parcelable.Creator<Contributor>() {
+        @Override
+        public Contributor createFromParcel(Parcel in) {
+            return new Contributor(in);
+        }
+
+        @Override
+        public Contributor[] newArray(int size) {
+            return new Contributor[size];
+        }
+    };
 }

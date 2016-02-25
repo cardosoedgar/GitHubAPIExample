@@ -1,6 +1,7 @@
 package com.cardosoedgar.githubapiexample;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     @Inject Github githubService;
 
     int pageNumber=0;
-    List<Contributor> contributorsList;
+    ArrayList<Contributor> contributorsList;
     Adapter adapter;
 
     @Override
@@ -34,7 +35,24 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         setupRecyclerView();
-        getContributors();
+        if(savedInstanceState != null) {
+            getState(savedInstanceState);
+        } else {
+            getContributors();
+        }
+    }
+
+    private void getState(Bundle savedInstanceState) {
+        pageNumber = savedInstanceState.getInt("pageNumber");
+        contributorsList.addAll(savedInstanceState.getParcelableArrayList("contributors"));
+        adapter.notifyItemRangeChanged(0, contributorsList.size());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("contributors", contributorsList);
+        outState.putInt("pageNumber", pageNumber);
     }
 
     private void setupRecyclerView() {
